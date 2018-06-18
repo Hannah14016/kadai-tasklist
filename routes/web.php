@@ -30,7 +30,14 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout.post');
 Route::put('logout', 'Auth\LoginController@logout')->name('logout.put');
 Route::delete('logout', 'Auth\LoginController@logout')->name('logout.delete');
 
-Route::group(['middleware' => ['auth']], function () {
-    Route::resource('users', 'UsersController', ['only' => ['index', 'show', 'create', 'edit']]);
-    Route::resource('tasks', 'TasksController', ['only' => ['store', 'destroy']]);
+Route::group(['middleware' => 'auth'], function () {
+    Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
+    Route::group(['prefix' => 'users/{id}'], function () {
+        Route::post('follow', 'UserFollowController@store')->name('user.follow');
+        Route::delete('unfollow', 'UserFollowController@destroy')->name('user.unfollow');
+        Route::get('followings', 'UsersController@followings')->name('users.followings');
+        Route::get('followers', 'UsersController@followers')->name('users.followers');
+    });
+
+    Route::resource('microposts', 'MicropostsController', ['only' => ['store', 'destroy']]);
 });
