@@ -31,6 +31,5 @@ Route::put('logout', 'Auth\LoginController@logout')->name('logout.put');
 Route::delete('logout', 'Auth\LoginController@logout')->name('logout.delete');
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
-    Route::resource('tasks', 'TasksController', ['only' => ['store', 'destroy']]);
+    Route::resource('tasks', 'TasksController');
 });

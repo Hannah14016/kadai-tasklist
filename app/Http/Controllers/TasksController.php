@@ -81,10 +81,9 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        if (\Auth::check()){
-            $task = \App\Task::find($id);
-            $user = \Auth::user();
-            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+        $task = \App\Task::find($id);
+        $user = \Auth::user();
+        $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
         
             if (\Auth::id() === $task->user_id){
             
@@ -96,10 +95,8 @@ class TasksController extends Controller
             } else {
                 return redirect('/');
             }
-        } else {
-                return view('welcome');
-        }
-    }
+        } 
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -131,16 +128,18 @@ class TasksController extends Controller
      */
     public function update(Request $request, $id)
     {   
+        
         $this->validate($request, [
             'status' => 'required|max:10',   // add
             'content' => 'required|max:191',
         ]);
         
         $task = Task::find($id);
-        $task->status = $request->status; 
-        $task->content = $request->content;
-        $task->save();
-
+        if (\Auth::id() === $task->user_id) {
+            $task->status = $request->status; 
+            $task->content = $request->content;
+            $task->save();
+        }
         return redirect('/');
     }
 
