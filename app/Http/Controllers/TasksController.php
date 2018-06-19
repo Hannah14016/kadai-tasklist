@@ -42,8 +42,7 @@ class TasksController extends Controller
     {
         if (\Auth::check()){
             $user = \Auth::user();
-        
-        $task = new Task;
+            $task = new Task;
 
         return view('tasks.create', [
             'task' => $task,
@@ -83,14 +82,22 @@ class TasksController extends Controller
     public function show($id)
     {
         if (\Auth::check()){
+            $task = \App\Task::find($id);
             $user = \Auth::user();
-            $task = Task::find($id);
-
-            return view('tasks.show', [
-                'task' => $task,
-            ]);
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+        
+            if (\Auth::id() === $task->user_id){
+            
+                return view('tasks.show', [
+                    'user' => $user,
+                    'task' => $task,
+                    'tasks' => $tasks,
+                ]);
+            } else {
+                return redirect('/');
+            }
         } else {
-            return view('welcome');
+                return view('welcome');
         }
     }
 
